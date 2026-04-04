@@ -1642,6 +1642,12 @@ ul {
   min-height: 2.2em;
 }
 
+.timeline__card .timeline__note,
+.timeline__card .timeline__results li,
+.timeline__card .timeline__company {
+  color: #999 !important;
+}
+
 .timeline__card:hover {
   border-color: var(--color-text-muted);
 }
