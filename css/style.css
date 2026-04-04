@@ -213,7 +213,7 @@ ul {
   color: var(--color-text-sub);
 }
 
-.btn--ghost:hover {
+.btn.btn--ghost:hover {
   border-color: var(--color-text);
   color: var(--color-text);
   background: transparent;
