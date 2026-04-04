@@ -1706,7 +1706,7 @@ ul {
 
 .timeline__note {
   font-size: 15px;
-  color: var(--color-text-muted);
+  color: var(--color-text-sub);
   line-height: 1.5;
 }
 
