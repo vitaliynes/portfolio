@@ -355,7 +355,7 @@
       var emailVal   = contactForm.querySelector('[name="email"]').value;
       var messageVal = contactForm.querySelector('[name="message"]').value;
       var action     = contactForm.getAttribute('action');
-      var isPlaceholder = action.indexOf('YOUR_FORM_ID') !== -1;
+      var isPlaceholder = action.indexOf('YOUR_FORM') !== -1;
 
       function showSuccess() {
         contactForm.style.display = 'none';
