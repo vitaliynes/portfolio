@@ -2,3 +2,8 @@ node_modules/
 .claude/
 tweets-generated.html
 package-lock.json
+package.json
+screenshots/
+screenshot.js
+run-screenshots.bat
+assets/posts/
