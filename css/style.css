@@ -199,7 +199,7 @@ ul {
   background: transparent;
   color: var(--color-text);
   cursor: pointer;
-  transition: background 180ms ease, color 180ms ease;
+  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
   text-decoration: none;
 }
 
@@ -210,13 +210,13 @@ ul {
 
 .btn--ghost {
   border-color: var(--color-border-mid);
-  color: var(--color-text-sub);
+  color: var(--color-text);
 }
 
 .btn.btn--ghost:hover {
   border-color: var(--color-text);
-  color: var(--color-text);
-  background: transparent;
+  color: var(--color-bg);
+  background: var(--color-text);
 }
 
 /* ═══════════════════════════════════════
