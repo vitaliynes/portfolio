@@ -188,6 +188,8 @@ ul {
    BUTTONS
 ═══════════════════════════════════════ */
 .btn {
+  position: relative;
+  z-index: 2;
   display: inline-block;
   font-family: var(--font-body);
   font-size: var(--text-label);
@@ -196,10 +198,12 @@ ul {
   text-transform: uppercase;
   padding: 14px 36px;
   border: 1px solid var(--color-text);
-  background: transparent;
+  background: var(--color-bg);
   color: var(--color-text);
   cursor: pointer;
-  transition: background 180ms ease, color 180ms ease, border-color 180ms ease;
+  transition: background 360ms cubic-bezier(0.22, 1, 0.36, 1),
+              color 360ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 360ms cubic-bezier(0.22, 1, 0.36, 1);
   text-decoration: none;
 }
 
@@ -482,6 +486,7 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 32px;
+  min-width: 0;
 }
 
 .about__heading {
@@ -1078,6 +1083,97 @@ ul {
   margin-bottom: 28px;
 }
 
+/* ── Highlighted contact card ──────────── */
+@property --glow-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.contact__links {
+  position: relative;
+  padding: clamp(28px, 4vw, 44px);
+  border-radius: 14px;
+  background: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 60px -20px rgba(255, 255, 255, 0.08);
+  animation: contact-card-pulse 4s ease-in-out infinite;
+}
+
+/* Rotating conic-gradient border via mask trick (no overflow: hidden needed) */
+.contact__links::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0deg,
+    rgba(255, 255, 255, 0.6) 50deg,
+    transparent 110deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  animation: contact-glow-spin 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes contact-glow-spin {
+  to { --glow-angle: 360deg; }
+}
+
+@keyframes contact-card-pulse {
+  0%, 100% { box-shadow: 0 20px 60px -20px rgba(255, 255, 255, 0.06); }
+  50%      { box-shadow: 0 20px 80px -10px rgba(255, 255, 255, 0.14); }
+}
+
+/* "Available for work" pill — sits on top border */
+.contact__badge {
+  position: absolute;
+  top: -13px;
+  left: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-mid);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-sub);
+  z-index: 2;
+}
+
+.contact__badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+  animation: contact-badge-pulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes contact-badge-pulse {
+  0%, 100% { opacity: 1;  transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(1.3); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact__links::before,
+  .contact__links,
+  .contact__badge-dot {
+    animation: none;
+  }
+}
+
 .contact__cv-btn {
   margin-bottom: 12px;
   display: inline-block;
@@ -1221,6 +1317,11 @@ ul {
   opacity: 0;
 }
 
+.contact__form-drawer.is-open {
+  height: auto;
+  opacity: 1;
+}
+
 .contact__form {
   padding-top: 24px;
   padding-bottom: 8px;
@@ -1338,6 +1439,153 @@ ul {
 .hero__name,
 .hero__buttons {
   opacity: 0;
+}
+
+/* ═══════════════════════════════════════
+   ABOUT — STACK MARQUEE
+═══════════════════════════════════════ */
+.about__stack {
+  margin-top: clamp(28px, 3.5vw, 44px);
+}
+
+.about__stack-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.about__stack-label {
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.about__stack-hint {
+  font-family: var(--font-body);
+  font-size: 11px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  position: relative;
+  padding-left: 14px;
+}
+
+.about__stack-hint::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 6px;
+  height: 1px;
+  background: var(--color-border-mid);
+  transform: translateY(-50%);
+}
+
+.about__stack-marquee {
+  position: relative;
+  overflow-x: clip;
+  overflow-y: visible;
+  padding-top: 36px;
+  margin-top: -36px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+
+.about__stack-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: stack-scroll 40s linear infinite;
+  padding: 6px 0;
+  list-style: none;
+  margin: 0;
+}
+
+.about__stack-marquee:hover .about__stack-track {
+  animation-play-state: paused;
+}
+
+.about__stack-icon {
+  position: relative;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-mid);
+  border-radius: 50%;
+  cursor: default;
+  transition: background 300ms ease, border-color 300ms ease;
+}
+
+.about__stack-icon img,
+.about__stack-icon svg,
+.about__stack-text {
+  width: 55%;
+  height: 55%;
+  object-fit: contain;
+  opacity: 0.75;
+  color: var(--color-text);
+  transition: opacity 300ms ease, color 300ms ease, filter 300ms ease;
+}
+
+.about__stack-icon img { filter: grayscale(1); }
+
+.about__stack-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 14px;
+}
+
+.about__stack-icon:hover {
+  background: var(--color-text);
+  border-color: var(--color-text);
+}
+
+.about__stack-icon:hover img { opacity: 1; filter: grayscale(0) invert(1); }
+.about__stack-icon:hover svg,
+.about__stack-icon:hover .about__stack-text { opacity: 1; color: var(--color-bg); }
+
+.about__stack-icon[data-name]::after {
+  content: attr(data-name);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-mid);
+  padding: 4px 10px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+  border-radius: 2px;
+  z-index: 5;
+}
+
+.about__stack-icon[data-name]:hover::after { opacity: 1; }
+
+@keyframes stack-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about__stack-track { animation: none; }
 }
 
 /* ═══════════════════════════════════════
@@ -1495,7 +1743,10 @@ ul {
    EFFECT 1: MAGNETIC BUTTONS
 ═══════════════════════════════════════ */
 .magnetic {
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              background 360ms cubic-bezier(0.22, 1, 0.36, 1),
+              color 360ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 360ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ═══════════════════════════════════════

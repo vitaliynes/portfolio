@@ -132,15 +132,21 @@
     }
   }, { passive: true });
 
-  // Active link via scroll position (works for any section height)
+  // Active link = the last section whose top has entered the viewport
+  // (top is at or above 70% down the viewport — i.e. it has visibly scrolled in).
   function updateActiveNav() {
-    var scrollY = window.scrollY + 200;
+    var trigger = window.scrollY + window.innerHeight * 0.7;
     var current = '';
     sections.forEach(function (s) {
-      if (s.offsetTop <= scrollY) {
+      if (s.offsetTop <= trigger) {
         current = s.id;
       }
     });
+    // Fallback for short last section: force last when truly at page end
+    var nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 4;
+    if (nearBottom && sections.length) {
+      current = sections[sections.length - 1].id;
+    }
     navLinks.forEach(function (link) {
       link.classList.remove('is-active');
       if (link.getAttribute('href') === '#' + current) {
@@ -330,12 +336,14 @@
       var isOpen = emailToggle.getAttribute('aria-expanded') === 'true';
       if (isOpen) {
         emailToggle.setAttribute('aria-expanded', 'false');
+        formDrawer.classList.remove('is-open');
         if (emailToggleBadge) emailToggleBadge.textContent = 'Write';
         if (typeof gsap !== 'undefined') {
           gsap.to(formDrawer, { height: 0, opacity: 0, duration: 0.3, ease: 'power2.in' });
         }
       } else {
         emailToggle.setAttribute('aria-expanded', 'true');
+        formDrawer.classList.add('is-open');
         if (emailToggleBadge) emailToggleBadge.textContent = 'Close';
         if (typeof gsap !== 'undefined') {
           gsap.to(formDrawer, { height: 'auto', opacity: 1, duration: 0.4, ease: 'power2.out' });
@@ -525,13 +533,40 @@
       requestAnimationFrame(animateFlow);
     }
 
+    // Warm up canvas: run the flow step many times synchronously so lines
+    // are already drawn on first paint (no "drawing from zero" on load)
+    function warmup(iterations) {
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 0.8;
+      for (var k = 0; k < iterations; k++) {
+        for (var i = 0; i < particles.length; i++) {
+          var p = particles[i];
+          var angle = noise(p.x, p.y, t) * Math.PI * 2;
+          var nx = p.x + Math.cos(angle) * 0.5;
+          var ny = p.y + Math.sin(angle) * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(nx, ny);
+          ctx.stroke();
+          p.x = nx; p.y = ny;
+          if (p.x < 0) p.x = canvas.width;
+          if (p.x > canvas.width) p.x = 0;
+          if (p.y < 0) p.y = canvas.height;
+          if (p.y > canvas.height) p.y = 0;
+        }
+        t += 0.003;
+      }
+    }
+
     resizeCanvas();
     initParticles();
+    warmup(1200);
     requestAnimationFrame(animateFlow);
 
     window.addEventListener('resize', function () {
       resizeCanvas();
       initParticles();
+      warmup(1200);
     });
   }
 
