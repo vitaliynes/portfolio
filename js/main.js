@@ -134,6 +134,10 @@
 
   // Active link = the last section whose top has entered the viewport
   // (top is at or above 70% down the viewport — i.e. it has visibly scrolled in).
+  // Sections without their own nav link map to a parent nav section.
+  // E.g. when scrolling through #linkedin, keep "Posts" highlighted.
+  var navAlias = { linkedin: 'posts' };
+
   function updateActiveNav() {
     var trigger = window.scrollY + window.innerHeight * 0.7;
     var current = '';
@@ -147,6 +151,9 @@
     if (nearBottom && sections.length) {
       current = sections[sections.length - 1].id;
     }
+    // Apply alias if this section has no nav link of its own
+    if (navAlias[current]) current = navAlias[current];
+
     navLinks.forEach(function (link) {
       link.classList.remove('is-active');
       if (link.getAttribute('href') === '#' + current) {
@@ -236,6 +243,12 @@
     var xLink = card.querySelector('.tweet-card__x-link');
     var tweetUrl = xLink ? xLink.href : '';
 
+    // Whole card clickable -> opens tweet on X
+    card.addEventListener('click', function (e) {
+      if (e.target.closest('a, button')) return;
+      if (tweetUrl) window.open(tweetUrl, '_blank', 'noopener');
+    });
+
     // Add "· Follow" link to header
     var handle = card.querySelector('.tweet-card__handle');
     if (handle && !handle.querySelector('.tweet-card__follow')) {
@@ -323,6 +336,77 @@
       }
     });
   });
+
+  /* ─────────────────────────────────────
+     LINKEDIN — read more modal
+  ───────────────────────────────────── */
+  var liModal = document.getElementById('liModal');
+  var liModalAvatar  = document.getElementById('liModalAvatar');
+  var liModalAuthor  = document.getElementById('liModalAuthor');
+  var liModalHandle  = document.getElementById('liModalHandle');
+  var liModalText    = document.getElementById('liModalText');
+  var liModalMedia   = document.getElementById('liModalMedia');
+  var liModalImage   = document.getElementById('liModalImage');
+  var liModalLink    = document.getElementById('liModalLink');
+
+  function openLiModal(card) {
+    if (!liModal) return;
+    var avatar = card.querySelector('.li-card__avatar');
+    var nameEl = card.querySelector('.li-card__name');
+    var handleEl = card.querySelector('.li-card__handle');
+    var textEl = card.querySelector('.li-card__text');
+    var mediaImg = card.querySelector('.li-card__media img');
+    var linkEl = card.querySelector('.li-card__view') || card.querySelector('.li-card__source');
+
+    if (avatar) liModalAvatar.src = avatar.src;
+    if (nameEl) liModalAuthor.textContent = nameEl.textContent.trim();
+    if (handleEl) liModalHandle.textContent = handleEl.textContent.trim();
+    if (textEl) liModalText.innerHTML = textEl.innerHTML;
+    if (mediaImg) {
+      liModalImage.src = mediaImg.src;
+      liModalMedia.hidden = false;
+    } else {
+      liModalMedia.hidden = true;
+      liModalImage.src = '';
+    }
+    if (linkEl) liModalLink.href = linkEl.href;
+
+    liModal.hidden = false;
+    document.body.classList.add('li-modal-open');
+  }
+
+  function closeLiModal() {
+    if (!liModal) return;
+    liModal.hidden = true;
+    document.body.classList.remove('li-modal-open');
+  }
+
+  document.querySelectorAll('.li-card').forEach(function (card) {
+    var text = card.querySelector('.li-card__text');
+    if (!text) return;
+
+    // Mark as clamped if content overflows so the fade gradient shows
+    if (text.scrollHeight > text.clientHeight + 2) {
+      card.classList.add('is-clamped');
+    }
+
+    // Whole card opens modal (except the source-link in header and view-link)
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', function (e) {
+      var inner = e.target.closest('a');
+      if (inner) return; // let header link / view-on-linkedin work
+      openLiModal(card);
+    });
+  });
+
+  if (liModal) {
+    liModal.addEventListener('click', function (e) {
+      if (e.target.hasAttribute('data-close')) closeLiModal();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !liModal.hidden) closeLiModal();
+    });
+  }
 
   /* ─────────────────────────────────────
      9. CONTACT FORM — email toggle + submit
