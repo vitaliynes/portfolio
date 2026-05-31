@@ -243,9 +243,9 @@
     var xLink = card.querySelector('.tweet-card__x-link');
     var tweetUrl = xLink ? xLink.href : '';
 
-    // Whole card clickable -> opens tweet on X
+    // Whole card clickable -> opens tweet on X (except links, buttons, and video)
     card.addEventListener('click', function (e) {
-      if (e.target.closest('a, button')) return;
+      if (e.target.closest('a, button, video, .tweet-card__media--video')) return;
       if (tweetUrl) window.open(tweetUrl, '_blank', 'noopener');
     });
 

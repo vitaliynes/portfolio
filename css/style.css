@@ -2488,3 +2488,22 @@ body.li-modal-open {
 [data-client="3commas"] .tweet-card__verified path[fill="#1d9bf0"] {
   fill: #fab81b;
 }
+
+/* Video player in tweet card */
+.tweet-card__media--video {
+  position: relative;
+  background: #000;
+}
+
+.tweet-card__media--video video {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  cursor: default;
+}
+
+.tweet-card__media--video video:fullscreen,
+.tweet-card__media--video video::backdrop {
+  object-fit: contain;
+}
