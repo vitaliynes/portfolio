@@ -923,7 +923,7 @@ ul {
 }
 
 .tweet-card:has(.tweet-card__media) .tweet-card__text {
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 4;
 }
 
 .tweet-card__footer {
@@ -2489,21 +2489,31 @@ body.li-modal-open {
   fill: #fab81b;
 }
 
-/* Video player in tweet card */
+/* Video poster + play overlay (X blocks cross-origin MP4 embed) */
 .tweet-card__media--video {
   position: relative;
   background: #000;
 }
 
-.tweet-card__media--video video {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  display: block;
-  cursor: default;
+.tweet-card__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: #fff;
+  transform: translate(-50%, -50%);
+  transition: background 200ms ease, transform 200ms ease;
+  pointer-events: none;
 }
 
-.tweet-card__media--video video:fullscreen,
-.tweet-card__media--video video::backdrop {
-  object-fit: contain;
+.tweet-card:hover .tweet-card__play {
+  background: rgba(0, 0, 0, 0.9);
+  transform: translate(-50%, -50%) scale(1.08);
 }
