@@ -584,6 +584,15 @@ ul {
   align-items: start;
 }
 
+.cases__note {
+  margin-top: 24px;
+  font-size: var(--text-caption);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
 .card {
   background: var(--color-bg);
   border: 1px solid var(--color-border);
